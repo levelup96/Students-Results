@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>نتيجة الطالب</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="max-w-3xl mx-auto p-6">
+<a href="/" class="text-sm text-blue-700">⬅ العودة للبحث</a>
+<h1 class="text-2xl font-bold mb-4">نتيجة الطالب</h1>
+
+
+<div id="card" class="bg-white p-5 rounded-2xl shadow"></div>
+</div>
+
+
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+
+
+async function load() {
+const res = await fetch('/api/student/' + id);
+if (!res.ok) {
+document
