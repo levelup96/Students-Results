@@ -1,0 +1,72 @@
+<!doctype html>
+<div class="bg-white p-4 rounded-2xl shadow mb-6">
+<label class="block mb-2 font-medium">ابحث بالاسم</label>
+<input id="name" class="w-full border rounded-xl p-3 mb-4" placeholder="مثال: أحمد" />
+
+
+<div class="text-center my-2">أو</div>
+
+
+<label class="block mb-2 font-medium">ابحث برقم الجلوس</label>
+<input id="seat" class="w-full border rounded-xl p-3 mb-4" placeholder="مثال: 20250001" />
+
+
+<button id="searchBtn" class="px-5 py-3 rounded-2xl bg-black text-white">بحث</button>
+</div>
+
+
+<div id="results" class="space-y-3"></div>
+</div>
+
+
+<script>
+const el = (s) => document.querySelector(s);
+el('#searchBtn').addEventListener('click', async () => {
+const name = el('#name').value.trim();
+const seat = el('#seat').value.trim();
+if (!name && !seat) { alert('اكتب الاسم أو رقم الجلوس'); return; }
+
+
+const params = new URLSearchParams();
+if (name) params.set('name', name);
+if (seat) params.set('seat', seat);
+const res = await fetch('/api/search?' + params.toString());
+const data = await res.json();
+
+
+const container = el('#results');
+container.innerHTML = '';
+
+
+if (!data || (Array.isArray(data) && data.length === 0)) {
+container.innerHTML = '<div class="p-4 bg-white rounded-2xl shadow">لا توجد نتائج</div>';
+return;
+}
+
+
+if (Array.isArray(data)) {
+// نتائج بالاسم — قائمة
+for (const row of data) {
+const card = document.createElement('a');
+card.href = '/result.html?id=' + row.id;
+card.className = 'block bg-white p-4 rounded-2xl shadow hover:shadow-lg transition';
+card.innerHTML = `<div class="flex justify-between">
+<div>
+<div class="font-bold">${row.name}</div>
+<div class="text-sm text-gray-600">مدرسة: ${row.school || '-'}</div>
+</div>
+<div class="text-right">
+<div class="text-sm text-gray-600">رقم الجلوس: ${row.seat_number}</div>
+<div class="text-sm">المجموع: ${row.total ?? '-'} | النسبة: ${row.percentage ?? '-'}%</div>
+</div>
+`;
+container.appendChild(card);
+}
+} else {
+// نتيجة برقم الجلوس — انتقال مباشر
+window.location.href = '/result.html?id=' + data.id;
+}
+});
+</script>
+</body>
+</html>
